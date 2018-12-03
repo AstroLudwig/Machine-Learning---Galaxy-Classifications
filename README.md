@@ -2,9 +2,12 @@
 Recreating results from [Banerji, 2010](https://academic.oup.com/mnras/article/406/1/342/1073212) on classifying galaxies using machine learning. To be clear, most of the information below is from this paper. The focus of this project is to learn some machine learning techniques for the first time rather than to improve or alter the information in this paper.
 ## Download Data
 ### Galaxy Zoo
-> The Galaxy Zoo catalogue that we use in this paper is the combined weighted sample of Lintott et al. (2008). This contains morphological classifications for 893,212 objects into four morphological classes – ellipticals, spirals, mergers and point sources/artefacts.
+> The Galaxy Zoo catalogue that we use in this paper is the combined weighted sample of Lintott et al. (2008). This contains morphological classifications for 893,212 objects into four morphological classes – ellipticals, spirals, mergers and point sources/artefacts.  
+  
+This corresponds to table 2 and table 3 of the [Galaxy Zoo 1 Data Release](https://data.galaxyzoo.org/).  
+Time permitting, I could try this methodology on the galaxy zoo 2 data release. 
 ### SDSS
-> We match the Galaxy Zoo catalogue to the SDSS DR7 PhotoObjAll 5 catalogue in order to obtain input parameters for the neural
+> We match the Galaxy Zoo catalogue to the SDSS DR7 PhotoObjAll catalogue in order to obtain input parameters for the neural
 network code 
 ## Data Reduction
 >[W]e apply cuts to our sample and remove objects that are not detected in the g, r and i bands and those that have spurious values and large errors for some of the other parameters used in this study ... We ... also remove the few well classified mergers with a fraction of vote of being a merger greater than 0.8 from the sample as we are not attempting to classify the mergers in this work.  
