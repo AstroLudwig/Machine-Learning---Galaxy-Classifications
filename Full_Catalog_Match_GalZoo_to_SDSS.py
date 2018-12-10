@@ -3,7 +3,7 @@
 NAME:
     GalZoo to SDSS
 PURPOSE:
-    
+    Combine and Reduce Galaxy Zoo Data. Upload to CASJOBS. Merge with SDSS Data
 NOTE: 
 	I found the more efficient SQL method because I had to. Download 10,000 objects and then 
 	reducing gives me 37 objects. :) So I figured out how to use CAS JOBS and I'm going to 
@@ -12,7 +12,6 @@ NOTE:
 import numpy as np 
 from astropy.io import fits
 from astropy.coordinates import SkyCoord
-#from astroquery.sdss import SDSS
 import astropy.units as u
 import pandas as pd 
 
@@ -29,30 +28,86 @@ import pandas as pd
 
 """ SQL COMMAND:
 SELECT 
-   p.objID, p.ra, p.dec, p.run, p.rerun, p.casdssol, p.field,
-   dbo.fPhotoTypeN(p.type) as type,
-   p.dered_g, p.dered_r, p.dered_i, p.deVAB_i, p.expAB_i,
-   p.lnLExp_i, p.lnLDeV_i, p.lnLStar_i, p.petroR90_i, p.petroR50_i,
-   p.mRrCc_i, p.sdssr4_i, p.texture_i into mydb.MyTable_0 from MyDB.MyTable AS m
-CROSS APPLY dbo.fGetNearestObjEq( m.ra, m.dec, 0.5) AS n
-JOIN PhotoObjAll AS p ON n.objid=p.objid
+  p.objID, 
+  p.ra, 
+  p.dec, 
+  p.run, 
+  p.field,
+  dbo.fPhotoTypeN(p.type) as type,
+  p.dered_g, 
+  p.dered_r, 
+  p.dered_i, 
+  p.deVAB_i, 
+  p.expAB_i,
+  p.lnLExp_i, 
+  p.lnLDeV_i, 
+  p.lnLStar_i, 
+  p.petroR90_i, 
+  p.petroR50_i,
+  p.mRrCc_i, 
+  p.mCr4_i,
+  p.texture_i
+INTO mydb.MatchedByOBJID
+FROM mydb.FullOBJID as o
+JOIN PhotoObjAll AS p ON p.objid=o.objid
 """
-# Load Data
-gz = pd.read_csv("GalaxyZoo/GalaxyZoo1_DR_table2.csv")
-sdss = pd.read_csv("SDSS/Table2CasJob.csv")
+############
+# Switches #
+############
 
-# Remove stars from sdss table
-sdss = sdss.drop(sdss[sdss.type == "STAR"].index)
+phase_1 = False # Merges Galaxy Zoo Table 2 and 3, Reduces, Saves
+phase_2 = True # Combines Galaxy Zoo Reduced Table with Object ID Matched SDSS Catalog
 
-# Remove rows where none of the votes exceed 0.8
-gz = gz.drop(gz[(gz.P_EL < 0.8) & (gz.P_CW < 0.8) & 
- 				(gz.P_ACW < 0.8) & (gz.P_EDGE < 0.8) & 
- 				(gz.P_DK < 0.8) & (gz.P_MG < 0.8)].index)
-# Remove mergers
-gz = gz.drop(gz[gz.P_MG > 0.8].index)
+#######################
+# Galaxy Zoo Handling #
+#######################
+# Once this phase is complete, upload object ids to casjobs, download sdss info, load into phase 2 and merge. 
+if phase_1:
+	# Load Galaxy Zoo Data, Join Tables
+	gz2 = pd.read_csv("GalaxyZoo/GalaxyZoo1_DR_table2.csv")
+	gz3 = pd.read_csv("GalaxyZoo/GalaxyZoo1_DR_table3.csv")
+	gz = pd.concat([gz2,gz3],axis=0, join='outer', ignore_index=True,sort=False)
 
-## Merge the data based on object id
-# Rename objID to OBJID so both have the same key
-sdss = sdss.rename(index=str,columns={"objID":"OBJID"})
+	# Remove rows where none of the votes exceed 0.8
+	gz = gz.drop(gz[(gz.P_EL < 0.8) & (gz.P_CW < 0.8) & 
+	 				(gz.P_ACW < 0.8) & (gz.P_EDGE < 0.8) & 
+	 				(gz.P_DK < 0.8) & (gz.P_MG < 0.8)].index)
 
-catalog = pd.merge(sdss,gz,on="OBJID")
+	# Remove mergers
+	gz = gz.drop(gz[gz.P_MG > 0.8].index)
+
+	# Seperate out Object Ids
+	OBJID = gz[["OBJID"]].copy()
+
+	# Convert to strings
+	OBJID["OBJID"] = OBJID["OBJID"].apply(lambda x: '{:d}'.format(x))
+
+	# Save as it's own dataframe, this is uploaded to casjobs
+	OBJID.to_csv("GalaxyZoo/GalaxyZoo_Table2And3_Reduced_ObjectID_Only.csv",index=False)
+	print(("Galaxy Zoo Reduced Catalog {} Object IDs Saved.").format(OBJID.shape[0]))
+
+	# Save Catalog
+	gz.to_csv("GalaxyZoo/GalaxyZoo_Table2And3_Reduced.csv",index=False)
+
+##############################
+# Galaxy Zoo and SDSS Merger #	
+##############################
+if phase_2:
+	# Load Reduced Galaxy Zoo Data
+	gz = pd.read_csv("GalaxyZoo/GalaxyZoo_Table2And3_Reduced.csv")
+	sdss = pd.read_csv("SDSS/MatchedByOBJID_AstroLudwig.csv")
+
+	# Rename objid to match
+	sdss = sdss.rename(columns={"objID":"OBJID"})
+
+	# Merge both tables
+	FinalCatalog = pd.merge(gz,sdss,on="OBJID")
+
+	# More Data Reduction, Remove anything that is not a galaxy
+	FinalCatalog = FinalCatalog.drop(FinalCatalog[(FinalCatalog.type == "STAR") | (FinalCatalog.type == "UNKNOWN")].index)
+	# Remove any spurious Values, -9999
+	FinalCatalog = FinalCatalog[FinalCatalog != -9999]
+	# Save 
+	FinalCatalog.to_csv("CombinedCatalog/Merged_Reduced_SDSS_GZ_Catalog.csv",index=False)
+
+	print(("Catalogs Merged {} Objects Saved.").format(FinalCatalog.shape[0]))
