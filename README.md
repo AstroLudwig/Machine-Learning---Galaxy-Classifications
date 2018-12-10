@@ -6,14 +6,44 @@ Recreating results from [Banerji, 2010](https://academic.oup.com/mnras/article/4
   
 This corresponds to table 2 and table 3 of the [Galaxy Zoo 1 Data Release](https://data.galaxyzoo.org/).  
 Time permitting, I could try this methodology on the galaxy zoo 2 data release. 
+  
 ### SDSS
 > We match the Galaxy Zoo catalogue to the SDSS DR7 PhotoObjAll catalogue in order to obtain input parameters for the neural
 network code 
+
+To download this data I used an SQL Search with [CasJobs](https://skyserver.sdss.org/casjobs/). You have to create an account to use this tool. After combining table 2 and 3 from galaxy zoo, and doing some minor reduction (removing things without a consensus on galactic morphology, i.e. no vote column had a value higher than 0.8) I uploaded a csv of object ids as strings (it wont work if the csv transforms the 18 digit number to scientific notation!).  
+This is the SQL search I wrote for this:  
+```
+SELECT 
+  p.objID, 
+  p.ra, 
+  p.dec, 
+  p.run, 
+  p.field,
+  dbo.fPhotoTypeN(p.type) as type,
+  p.dered_g, 
+  p.dered_r, 
+  p.dered_i, 
+  p.deVAB_i, 
+  p.expAB_i,
+  p.lnLExp_i, 
+  p.lnLDeV_i, 
+  p.lnLStar_i, 
+  p.petroR90_i, 
+  p.petroR50_i,
+  p.mRrCc_i, 
+  p.mCr4_i,
+  p.texture_i
+INTO mydb.MatchedByOBJID
+FROM mydb.FullOBJID as o
+JOIN PhotoObjAll AS p ON p.objid=o.objid
+```
+This leaves me with 264,327 objects, which is somewhat close to the paper's gold sample of 315,000 objects.  
 ## Data Reduction
 >[W]e apply cuts to our sample and remove objects that are not detected in the g, r and i bands and those that have spurious values and large errors for some of the other parameters used in this study ... We ... also remove the few well classified mergers with a fraction of vote of being a merger greater than 0.8 from the sample as we are not attempting to classify the mergers in this work.  
 > This leads to a sample of ∼800 000 objects. Further cuts are then applied to define a gold sample where the fraction of vote for each object belonging to any one of three morphological classes – ellipticals, spirals and point sources/artefacts – is always greater than 0.8. This gold sample contains ∼315 000 objects and is essentially equivalent to the clean sample of Lintott et al. (2008). The neural network is run on the gold sample as well as the entire sample.  
 
-Stars may need to be removed as well. 
+Removing rows where no votes > 0.8 removed most non galaxy items but I did some more cuts looking for rows that had types equal to unknown, or to stars. I also removed spurious values = -9999. This left me with 264,044 objects remaining. I'm both impressed and confused how the authors managed to retain 315,000 objects. 
 ## Identify Parameters
 ### First Set
 It is useful to define parameters that are independent of distance to the object. 
