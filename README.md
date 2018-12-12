@@ -49,13 +49,20 @@ Removing rows where no votes > 0.8 removed most non galaxy items but I did some 
 It is useful to define parameters that are independent of distance to the object. 
 > ![Table](https://i.imgur.com/IV8KSlD.png)  
 The colours are corrected for reddenning but not for redshift since that would reduce the sample. 
-> The other parameters considered are the axial ratios and log likelihoods associated with both a de Vaucouleurs and an exponential fit to the two-dimensional galaxy image. The de Vaucouleurs profile is commonly used to describe the variation in surface brightness of an elliptical galaxy as a function of radius whereas the exponential profile is used to describe the disc component of a spiral galaxy. In addition, the log likelihood of the object being well fitted by a point spread function (PSF), lnLstar, helps in distinguishing extended galaxies from more point-like sources.
+ > The other parameters considered are the axial ratios and log likelihoods associated with both a de Vaucouleurs and an exponential fit to the two-dimensional galaxy image. The de Vaucouleurs profile is commonly used to describe the variation in surface brightness of an elliptical galaxy as a function of radius whereas the exponential profile is used to describe the disc component of a spiral galaxy. In addition, the log likelihood of the object being well fitted by a point spread function (PSF), lnLstar, helps in distinguishing extended galaxies from more point-like sources.  
+  
 How parameters map to physical classifications:
-> Different parameters allow us to distinguish between different morphological classes. As expected, early types are found to be redder than spirals whereas the point sources and artefacts have a wide range of colours. The axial ratio obtained from a de Vaucouleurs fit to the galaxy images is closer to unity for early type systems (typically ∼0.8) compared to spirals (typically ∼0.3) and has a bimodal distribution for the point sources and artefacts. The log likelihood associated with the de Vaucouleurs fit is also larger for the early types than the spirals and largest for the point sources and artefacts.
+> Different parameters allow us to distinguish between different morphological classes.  
+> 1. Early types are found to be redder than spirals  
+  
+This isn't necessarily always true! In fact it was discovered using galaxy zoo data that blue ellipticals and red spirals exist.  
+> 2. The point sources and artefacts have a wide range of colours.  
+> 3. The axial ratio obtained from a de Vaucouleurs fit to the galaxy images is closer to unity for early type systems (typically ∼0.8) compared to spirals (typically ∼0.3) and has a bimodal distribution for the point sources and artefacts.  
+> 4. The log likelihood associated with the de Vaucouleurs fit is also larger for the early types than the spirals and largest for the point sources and artefacts.  
 ### Second Set
 > ![Table2](https://i.imgur.com/PpDJenG.png)  
    The concentration is given by the ratios of radii containing 90 and 50 per cent of the Petrosian flux in a given band.  
-   mRrCc is the second moment of the object intensity in the CCD row and column directions ![eq](https://latex.codecogs.com/gif.latex?\inline&space;mRrCc&space;=&space;\langle&space;y^2\rangle&space;&plus;&space;\langle&space;x^2\rangle) where ![eq](https://latex.codecogs.com/gif.latex?%5Cinline%20%5Clangle%20y%5E2%5Crangle%20%3D%20%5Cfrac%7B%5Csum%20I%28y%2Cx%29w%28y%2Cx%29y%5E2%7D%7B%5Csum%20I%28y%2Cx%29w%28y%2Cx%29%29%7D)
+   mRrCc is the second moment of the object intensity in the CCD row and column directions 
 ## Train Neural Net 
 ### Software Resourcces
 [ANNZ](https://arxiv.org/abs/astro-ph/0311058)  
