@@ -123,6 +123,8 @@ if phase_3:
 	FC = FC.drop(labels=["OBJID","RA","DEC","NVOTE","P_CW","P_ACW","P_EDGE",
 						  "P_MG","P_EL_DEBIASED","P_CS_DEBIASED","ra","dec",
 						  "run","field","type","UNCERTAIN","ELLIPTICAL","SPIRAL"],axis=1)
+	# Only keep bright objects to try to even out what types are left
+	FC = FC.drop(FC[FC.dered_r > 16].index)
 	# Create Color Columns
 	FC["dered_g-dered_r"] = FC["dered_g"] - FC["dered_r"]
 	FC["dered_r-dered_i"] = FC["dered_r"] - FC["dered_i"]
