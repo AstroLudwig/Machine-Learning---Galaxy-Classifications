@@ -65,16 +65,11 @@ This isn't necessarily always true! In fact it was discovered using galaxy zoo d
    mRrCc is the second moment of the object intensity in the CCD row and column directions 
 ## Train Neural Net 
 ### Software Resourcces
-[ANNZ](https://arxiv.org/abs/astro-ph/0311058)  
-[ANN](https://arxiv.org/abs/astro-ph/9503001)
-### Cost function
-> ![eq](https://latex.codecogs.com/gif.latex?\inline&space;E=\sum_k(T_{NN}(w_{ij},p_k)-T_{eye,k})^2)  
-> T_NN is the neural network probability of the object belonging to a particular morphological type, p_k are the input parameters to the network and T eye,k are the fractional weighted votes in the training set in this case assigned by Galaxy Zoo users.  
-> A training set is used to minimize the cost function wrt the free parameters w_ij
+To create the neural net, I used Sci-Kit learn on the advice of Dr. Renée Hložek. Sci-Kit learn comes with the anaconda installation and was happily already on my computer. Specifically, I used the [MLPClassifier](https://scikit-learn.org/stable/modules/neural_networks_supervised.html#classification) which 'implements a multi-layer perceptron (MLP) algorithm that trains using Backpropagation.'
 ### Architecture 
-> During the initial set-up, one has to specify the architecture of the neural network – the number of hidden layers and nodes in each hidden layer. We choose a neural network with two hidden layers with 2N nodes each, where N is the number of input parameters. The architecture of the network is therefore N:2N:2N:3. Note that increasing the number of nodes further either by adding nodes to existing hidden layers or by adding more hidden layers to the network does not result in any substantial improvement to the classifications.  
-> The three nodes in the output layer give the probability of the galaxy being an early type, spiral and point source/artefact, respectively, between 0 and 1. Neural nets with this type of output are statistical Bayesian estimators and therefore the sum of all three outputs is roughly, although rarely, exactly equal to 1. 
-> [T]his differs from the Galaxy Zoo fractional votes which always add up to exactly 1 over all four morphological classes – early types, spirals, point sources/artefacts and mergers. As mentioned earlier, the mergers are not classified by the neural network in this paper.
+> The architecture of the network is therefore N:2N:2N:3.  
+Keeping with this scheme, I had 11 parameters so I used 22 by 22 hidden layers.
+
 ## Evaluate Results
 # Bookmark
 Stopped at describing the second set of parameters. 
