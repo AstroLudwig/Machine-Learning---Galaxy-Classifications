@@ -68,8 +68,8 @@ This isn't necessarily always true! In fact it was discovered using galaxy zoo d
 To create the neural net, I used Sci-Kit learn on the advice of Dr. Renée Hložek. Sci-Kit learn comes with the anaconda installation and was happily already on my computer. Specifically, I used the [MLPClassifier](https://scikit-learn.org/stable/modules/neural_networks_supervised.html#classification) which 'implements a multi-layer perceptron (MLP) algorithm that trains using Backpropagation.'
 ### Architecture 
 > The architecture of the network is therefore N:2N:2N:3.  
+  
 Keeping with this scheme, I had 11 parameters so I used 22 by 22 hidden layers.
 
 ## Evaluate Results
-# Bookmark
-Stopped at describing the second set of parameters. 
+
