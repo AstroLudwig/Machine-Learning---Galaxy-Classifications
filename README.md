@@ -55,7 +55,7 @@ How parameters map to physical classifications:
 > Different parameters allow us to distinguish between different morphological classes.  
 > 1. Early types are found to be redder than spirals  
   
-This isn't necessarily always true! In fact it was discovered using galaxy zoo data that blue ellipticals and red spirals exist.  
+This isn't necessarily always true! In fact it was discovered using galaxy zoo data that blue ellipticals and red spirals [exist](http://adsabs.harvard.edu/abs/2013MNRAS.432..359T).  
 > 2. The point sources and artefacts have a wide range of colours.  
 > 3. The axial ratio obtained from a de Vaucouleurs fit to the galaxy images is closer to unity for early type systems (typically ∼0.8) compared to spirals (typically ∼0.3) and has a bimodal distribution for the point sources and artefacts.  
 > 4. The log likelihood associated with the de Vaucouleurs fit is also larger for the early types than the spirals and largest for the point sources and artefacts.  
