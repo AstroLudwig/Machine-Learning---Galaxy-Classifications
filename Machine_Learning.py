@@ -16,11 +16,12 @@ from sklearn.neural_network import MLPClassifier
 df = pd.read_csv("ML_Ready_Catalog.csv")
 
 # Split data set up into actual observations and then the type they were determined to be.
-Data = df.drop(labels="type",axis=1)
+Data = df.drop(labels=['OBJID', 'ra', 'dec', 'NVOTE', 'type'],axis=1)
 Class = df["type"]
+Responses = df["NVOTE"]
 
 # Use half the data set for training
-n = int(df.shape[0]/2)
+n = int(Data.shape[0]/2)
 TrainingData = np.asarray(Data.loc[0:n])
 TrainingClass = Class.loc[0:n]
 
@@ -44,10 +45,15 @@ PredictClass = clf.predict(RealData)
 Accuracy = np.shape(np.where((RealClass - PredictClass)==0))[1] / RealClass.shape[0] * 100
 
 # Root Mean Square Error, how they evaluate the kaggle contest.
-N =  df.shape[0] - n
+N =  (df.shape[0] - n) * np.sum(Responses.loc[n:df.shape[0]])
 rmse = np.sqrt(np.sum((RealClass - PredictClass)**2)/N)
 
+# Let's find a galaxy it got wrong and look at it. 
+Wrong = np.where((RealClass - PredictClass)!= 0)
+RealObjId = df["OBJID"].loc[n:df.shape[0]]; RealRA = df["ra"].loc[n:df.shape[0]]
+RealDEC = df["dec"].loc[n:df.shape[0]]
 
+WrongObjId = RealObjId.iloc[Wrong]; WrongRA = RealRA.iloc[Wrong]; WrongDEC = RealDEC.iloc[Wrong]
 # A bunch of nonsense to give me an idea of how well I did.
 print(("Accuracy {0:.2f}%").format(Accuracy))
 print(("Root Mean Squared Error {0:.2f}").format(rmse))
@@ -68,6 +74,7 @@ print(("{0:.2f}% of types are Early Types").format(np.shape(np.where(PredictClas
 print(("{0:.2f}% of types are Spirals").format(np.shape(np.where(PredictClass==2))[1]/PredictClass.shape[0]*100))
 
 # Plot of the histograms 
+plt.style.use('seaborn')
 f, (ax,bx) = plt.subplots(1,2)
 ax.hist(RealClass,bins=3,rwidth=1)#[0,1,2,3])
 bx.hist(PredictClass,bins=3,rwidth=1)#[0,1,2,3])
