@@ -1,11 +1,18 @@
 # Machine learning galaxy classifications
-Recreating results from [Banerji, 2010](https://academic.oup.com/mnras/article/406/1/342/1073212) on classifying galaxies using machine learning. To be clear, most of the information below is from this paper. The focus of this project is to learn some machine learning techniques for the first time rather than to improve or alter the information in this paper.
+This project was done as a requirement of the graduate Cosmology 2018 course with Dr. Renée Hložek. In it, I
+recreate the results from [Banerji, 2010](https://academic.oup.com/mnras/article/406/1/342/1073212) (here after Banerji) on classifying galaxies using machine learning techniques. I follow their strategies for data reduction but may be using different packages and solvers. My goal is to learn some machine learning techniques and experiment with a very cool data set.
+
+## Code
+#### Data_Acquisition.py
+Aquire, reduce, and combine the data sets.
+#### Machine_Learning.py
+Create a neural net to classify galaxies.
 ## Download Data
 ### Galaxy Zoo
-> The Galaxy Zoo catalogue that we use in this paper is the combined weighted sample of Lintott et al. (2008). This contains morphological classifications for 893,212 objects into four morphological classes – ellipticals, spirals, mergers and point sources/artefacts.  
+> The Galaxy Zoo catalogue that we use in this paper is the combined weighted sample of [Lintott et al. (2008)](http://adsabs.harvard.edu/abs/2008MNRAS.389.1179L). This contains morphological classifications for 893,212 objects into four morphological classes – ellipticals, spirals, mergers and point sources/artefacts.  
   
 This corresponds to table 2 and table 3 of the [Galaxy Zoo 1 Data Release](https://data.galaxyzoo.org/).  
-Time permitting, I could try this methodology on the galaxy zoo 2 data release. 
+This data set is very straight forward to download. Table 2 has 667,944 galaxies; Table 3 has 225,269 galaxies. The table contains the SDSS object id, the equatorial coordinates, the number of votes and the percent of votes that went to a particular category of galaxy including elliptical, clockwise spiral, anticlockwise spiral, edge on spiral galaxy, don't know, merger, or combined spirals. The catalogs and reduced versions can be found in the Galaxy Zoo folder of this repository. 
   
 ### SDSS
 > We match the Galaxy Zoo catalogue to the SDSS DR7 PhotoObjAll catalogue in order to obtain input parameters for the neural
@@ -37,28 +44,18 @@ SELECT
 INTO mydb.MatchedByOBJID
 FROM mydb.FullOBJID as o
 JOIN PhotoObjAll AS p ON p.objid=o.objid
-```
-This leaves me with 264,327 objects, which is somewhat close to the paper's gold sample of 315,000 objects.  
+```  
 ## Data Reduction
->[W]e apply cuts to our sample and remove objects that are not detected in the g, r and i bands and those that have spurious values and large errors for some of the other parameters used in this study ... We ... also remove the few well classified mergers with a fraction of vote of being a merger greater than 0.8 from the sample as we are not attempting to classify the mergers in this work.  
-> This leads to a sample of ∼800 000 objects. Further cuts are then applied to define a gold sample where the fraction of vote for each object belonging to any one of three morphological classes – ellipticals, spirals and point sources/artefacts – is always greater than 0.8. This gold sample contains ∼315 000 objects and is essentially equivalent to the clean sample of Lintott et al. (2008). The neural network is run on the gold sample as well as the entire sample.  
+Banerji defines a gold sample of galaxies to train their net on and I decided to follow along and make the same cuts that they did. I removed all potential galactic mergers and galaxies without a consensus (vote fraction < 0.8). I removed rows that did not have all of the parameters or had spurious values (=-9999). I removed objects that were categorized as stars by SDSS. I removed objects that had an apparent magnitude in the corrected R band greater than 16 mag.
 
-Removing rows where no votes > 0.8 removed most non galaxy items but I did some more cuts looking for rows that had types equal to unknown, or to stars. I also removed spurious values = -9999. This left me with 264,044 objects remaining. I'm both impressed and confused how the authors managed to retain 315,000 objects. 
+Banerji's gold sample contained 315,000 objects. After my initial data reduction of galaxy zoo data I have 264,327 objects. After matching these objects by object id to SDSS's PhotoObjAll DR7 catalog and making further reductions I have 50,753 objects. The combined and reduced data set is labeled ML_Ready_Catalog.csv.   
 ## Identify Parameters
 ### First Set
-It is useful to define parameters that are independent of distance to the object. 
-> ![Table](https://i.imgur.com/IV8KSlD.png)  
-The colours are corrected for reddenning but not for redshift since that would reduce the sample. 
- > The other parameters considered are the axial ratios and log likelihoods associated with both a de Vaucouleurs and an exponential fit to the two-dimensional galaxy image. The de Vaucouleurs profile is commonly used to describe the variation in surface brightness of an elliptical galaxy as a function of radius whereas the exponential profile is used to describe the disc component of a spiral galaxy. In addition, the log likelihood of the object being well fitted by a point spread function (PSF), lnLstar, helps in distinguishing extended galaxies from more point-like sources.  
+Because we do not have distances to all of our sources, and to avoid making further cuts, Banerji defines parameters that are correlated with galactic type but that do not dependence on distance, such as color, smoothness, or ratio of radii. Similarly, while the magnitudes have been corrected for dust reddening, they have not been corrected for redshift.
+> ![Table](https://i.imgur.com/IV8KSlD.png) 
   
-How parameters map to physical classifications:
-> Different parameters allow us to distinguish between different morphological classes.  
-> 1. Early types are found to be redder than spirals  
-  
-This isn't necessarily always true! In fact it was discovered using galaxy zoo data that blue ellipticals and red spirals [exist](http://adsabs.harvard.edu/abs/2013MNRAS.432..359T).  
-> 2. The point sources and artefacts have a wide range of colours.  
-> 3. The axial ratio obtained from a de Vaucouleurs fit to the galaxy images is closer to unity for early type systems (typically ∼0.8) compared to spirals (typically ∼0.3) and has a bimodal distribution for the point sources and artefacts.  
-> 4. The log likelihood associated with the de Vaucouleurs fit is also larger for the early types than the spirals and largest for the point sources and artefacts.  
+Color is used because ellipticals tend to be redder and spirals more blue. However, this isn't necessarily always true. In fact it was discovered using galaxy zoo data that blue ellipticals and red spirals [exist](http://adsabs.harvard.edu/abs/2013MNRAS.432..359T).  
+Other parameters in the first set include the de Vaucouleurs profile and the exponential profile which map to elliptical and spiral galaxies, respectively. Both by describing their light profiles.
 ### Second Set
 > ![Table2](https://i.imgur.com/PpDJenG.png)  
    The concentration is given by the ratios of radii containing 90 and 50 per cent of the Petrosian flux in a given band.  
