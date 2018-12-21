@@ -78,6 +78,8 @@ In probing the probability that the galactic classification is correct, it seems
 
 The image on the left appears, to me (a non expert), to be a blue elliptical. As blue ellipticals seemed to evade astronomers prior to Galaxy Zoo I think it's fair that it managed to also evade my neural net. The image on the right seems to have a bright spot within the galaxy (possibly a dwarf galaxy? supernova? foreground star? merger?). Since we measure the concentration as the ratio of radii (which I believe are measured by how much light they contain) it makes sense to me that the petroR90_i/petroR50_i parameter could have been misleading. These were the first two wrongly labeled galaxies I looked at. It would definitely be interesting to probe this further and see what strategies could be employed to account for various artefacts.
 ## Future Work
-Given time it would definitely be interesting to see how this machinery would stand against the entire data set, as opposed to the reduced. It would also be interesting to apply it to more recent data releases.  
-With many amazing surveys coming online it would be interesting to match these objects to other catalogs and correct for redshift and also include distances in the parameters.  
-This has been my first step in machine learning, I am definitely excited to try out various architectures, solvers, and techniques in the future!  
+* Given time it would definitely be interesting to see how this machinery would stand against the entire data set, as opposed to the reduced. It would also be interesting to apply it to more recent data releases.  
+
+* With many amazing surveys coming online it would be useful to match these objects to other catalogs and correct for redshift and also include distances in the parameters.  
+
+* This has been my first step in machine learning, I am definitely excited to try out various architectures, solvers, and techniques in the future!  
