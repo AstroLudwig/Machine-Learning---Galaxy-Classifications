@@ -58,15 +58,26 @@ Color is used because ellipticals tend to be redder and spirals more blue. Howev
 Other parameters in the first set include the de Vaucouleurs profile and the exponential profile which map to elliptical and spiral galaxies, respectively. Both by describing their light profiles.
 ### Second Set
 > ![Table2](https://i.imgur.com/PpDJenG.png)  
-   The concentration is given by the ratios of radii containing 90 and 50 per cent of the Petrosian flux in a given band.  
-   mRrCc is the second moment of the object intensity in the CCD row and column directions 
+  
+Rather than using distances, we can use the ratio of the radii to understand how concentrated the sources are. The radii is measured to contain some percent of the flux in a given band. The other parameters are variations of moments of object intensity on the detector.    
 ## Train Neural Net 
 ### Software Resourcces
 To create the neural net, I used Sci-Kit learn on the advice of Dr. Renée Hložek. Sci-Kit learn comes with the anaconda installation and was happily already on my computer. Specifically, I used the [MLPClassifier](https://scikit-learn.org/stable/modules/neural_networks_supervised.html#classification) which 'implements a multi-layer perceptron (MLP) algorithm that trains using Backpropagation.'
-### Architecture 
-> The architecture of the network is therefore N:2N:2N:3.  
-  
-Keeping with this scheme, I had 11 parameters so I used 22 by 22 hidden layers.
-
+### Multi Layer Perceptron Classifier
+This is a type of neural net considered to be feed forward as the layers do not circle back to each other. The simplest, most "vanilla", neaural network you can have is an input layer, one hidden layer, and an output layer. The weights of the parameters are calculated by the neaural net using back propagation which is shorthand for backward propagation of errors since the errors are computed at the output and distributed backwards throughout the network's layers. These errors are optimized using a solver. I used a solver called ["Adam"](https://arxiv.org/pdf/1412.6980.pdf) which is a stochastic gradient based optimizer that works really well for giant data sets. I tried other solvers as well such as "lbfgs" which converges quickly and is similar to the Newton method but gave me poor results. 
+### Architecture N:2N:2N:3   
+I use 11 parameters as opposed to Banerji who uses 12. This means that I additionally have 2 hidden layers, each with 22 neurons, and 3 output neurons. 
 ## Evaluate Results
+In comparing my results to Banerji I achieve accuracies listed in the table below.
 
+![Table3](https://github.com/AstroLudwig/machine-learning-galaxy/blob/master/Results/Results_Accuracy.png?raw=true)
+
+In probing the probability that the galactic classification is correct, it seems that for the types that are or are not correct, the neural net is very confident of their type. There are galaxies that fall within confidences of 20 - 80 % but they are comparatively quite small in number. Although I am very happy with my results, I wanted to see why the net is so sure that galaxies are a different type than how they've been classified by online users. Below are images of 2 galaxies I checked at random that the net was wrong about. I did not check all of the incorrectly labeled galaxies but I immediately found some interesting things. 
+
+![WrongGalaxies](https://github.com/AstroLudwig/machine-learning-galaxy/blob/master/Results/WronglyClassifiedGalaxies.png?raw=true)
+
+The image on the left appears, to me (a non expert), to be a blue elliptical. As blue ellipticals seemed to evade astronomers prior to Galaxy Zoo I think it's fair that it managed to also evade my neural net. The image on the right seems to have a bright spot within the galaxy (possibly a dwarf galaxy? supernova? foreground star? merger?). Since we measure the concentration as the ratio of radii (which I believe are measured by how much light they contain) it makes sense to me that the petroR90_i/petroR50_i parameter could have been misleading. These were the first two wrongly labeled galaxies I looked at. It would definitely be interesting to probe this further and see what strategies could be employed to account for various artefacts.
+## Future Work
+Given time it would definitely be interesting to see how this machinery would stand against the entire data set, as opposed to the reduced. It would also be interesting to apply it to more recent data releases.  
+With many amazing surveys coming online it would be interesting to match these objects to other catalogs and correct for redshift and also include distances in the parameters.  
+This has been my first step in machine learning, I am definitely excited to try out various architectures, solvers, and techniques in the future!  
